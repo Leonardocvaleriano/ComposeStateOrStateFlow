@@ -13,6 +13,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,12 +39,18 @@ class MainActivity : ComponentActivity() {
                     val viewModel = viewModel<MainViewModel>()
 
                     // StateFlow
-                    val flowIsUserFirstAccess = viewModel.isUserFirstAccess.collectAsState()
+
+                    /** collectAsState() Benefits
+                     * LifeCycle Awareness (this state, so it will automatically start,stop and clean up resources based on lifecycle state its parent):
+                        - Avoid memory leaks by collecting the flow in a lifecycle-aware manner
+                     * Observe state changes, so every time that the value changes, the compose will recompose the UI.
+                     */
+                    val flowIsUserFirstAccess by viewModel.isUserFirstAccess.collectAsState()
 
                     // ComposeState
                     val composeIsUserFirstAccess = viewModel.composeStateIsUserFirstAccess
 
-                    HomeScreen(isUserFirstAccess = flowIsUserFirstAccess.value, setFirstAccessOnClick = {
+                    HomeScreen(isUserFirstAccess = flowIsUserFirstAccess, setFirstAccessOnClick = {
                         viewModel.recognizeFirstUserAccess()
                     }
                     )
